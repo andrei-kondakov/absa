@@ -60,7 +60,7 @@ ROOT_URLCONF = 'absa.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR,  'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -173,11 +173,3 @@ LOGGING = {
         },
     },
 }
-
-#
-# RAVEN_CONFIG = {
-#     'dsn': 'https://93ed4517e58841f3b11d7c29e240c65b:696c8749c35f43abaeb277d44c811584@sentry.io/1159010',
-#     # If you are using git, you can also automatically configure the
-#     # release based on the git info.
-#     'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
-# }

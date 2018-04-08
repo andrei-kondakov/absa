@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Batch {{ batch.id }}{% endblock %}
+
+{% block content %}
+    <h1>Sentence batch #{{ batch.id }}, task: {{ batch.task }}</h1>
+
+
+    <div class="ui raised segments">
+        <h3 class="ui top attached header">
+            Train sentences
+        </h3>
+
+        <table class="ui selectable celled table">
+            <thead>
+            <tr>
+                <th class="four wide">Raw</th>
+                <th class="four wide">Preprocessing</th>
+                <th class="five wide">X</th>
+                <th class="one wide">Y_raw</th>
+                <th class="one wide">Y</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row_items in train_sentences_table.rows %}
+                <tr>
+                    <td >{{ row_items.raw }}</td>
+                    <td>{{ row_items.preprocessing }}</td>
+                    <td>{{ row_items.x }}</td>
+                    <td>{{ row_items.y_raw|safe }}</td>
+                    <td>{{ row_items.y }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="ui raised segments">
+        <h3 class="ui top attached header">
+            Test sentences
+        </h3>
+
+        <table class="ui selectable celled table">
+            <thead>
+            <tr>
+                <th class="four wide">Raw</th>
+                <th class="four wide">Preprocessing</th>
+                <th class="five wide">X</th>
+                <th class="one wide">Y_raw</th>
+                <th class="one wide">Y</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row_items in test_sentences_table.rows %}
+                <tr>
+                    <td >{{ row_items.raw }}</td>
+                    <td>{{ row_items.preprocessing }}</td>
+                    <td>{{ row_items.x }}</td>
+                    <td>{{ row_items.y_raw|safe }}</td>
+                    <td>{{ row_items.y }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+{% endblock %}
