@@ -3,3 +3,7 @@ psycopg2==2.7.4
 psycopg2-binary==2.7.4
 django-extensions==2.0.6
 ipython==6.3.1
+pymorphy2[fast]==0.8
+gensim==3.4.0
+Keras==2.1.5
+tensorflow==1.7.0
