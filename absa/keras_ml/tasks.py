@@ -8,7 +8,7 @@ from keras.layers.embeddings import Embedding
 from keras.models import model_from_config
 from keras_ml.constants import KERAS_MODELS_DIR
 from keras_ml.models import TrainSession
-from keras_ml.utils import TimingCallback
+from keras_ml.utils import TimingCallback, get_metrics
 from word_embeddings.utils import create_embedding_matrix, load_w2v_model
 
 logger = logging.getLogger('absa')
@@ -49,7 +49,7 @@ def train(session):
     model_path = os.path.join(model_dir, f'{session.id}.h5')
     model.save(model_path)
 
-    session.y_pred = model.predict(x_test).tolist()
+    session.y_pred = model.predict_classes(x_test).tolist()
     session.exec_time = timing_callback.logs
     session.history = history_obj.history
     session.model_filepath = model_path
@@ -57,7 +57,8 @@ def train(session):
 
 
 def evaluate(session):
-    raise NotImplementedError
+    session.evaluation = get_metrics(session.batch.y_test, session.y_pred)
+    session.save()
 
 
 def train_all():
