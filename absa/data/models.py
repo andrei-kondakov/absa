@@ -109,7 +109,7 @@ class SentenceBatch(models.Model):
     y_test = ArrayField(base_field=models.IntegerField(), blank=True)
 
     class Meta:
-        db_table = 'sentence_batch'
+        db_table = 'data_sentence_batch'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'raven.contrib.django.raven_compat',
     'data',
-    'word_embeddings'
+    'word_embeddings',
+    'keras_ml'
 ]
 
 MIDDLEWARE = [
