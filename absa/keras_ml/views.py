@@ -8,7 +8,7 @@ def session_detail(request, session_id):
 
     error_sentences = []
 
-    for i in range(len(session.batch.x_test)):
+    for i in range(len(session.y_pred)):
         y_pred = int(session.y_pred[i][0])
         y_true = int(session.batch.y_test[i])
 

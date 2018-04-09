@@ -257,73 +257,78 @@
         </tbody>
     </table>
 
-    <table class="ui celled table">
-        <thead>
-        <tr>
-            <th colspan="2">
-                Train evaluation
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>
-                <i class="info icon"></i> Precision
-            </td>
-            <td>{{ session.evaluation.precision|floatformat:4 }}</td>
-        </tr>
-        <tr>
-            <td>
-                <i class="info icon"></i> Recall
-            </td>
-            <td>{{ session.evaluation.recall|floatformat:4 }}</td>
-        </tr>
-        <tr>
-            <td>
-                <i class="info icon"></i> F1 score
-            </td>
-            <td>{{ session.evaluation.f1_score|floatformat:4 }}</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <h3 class="ui top attached block header">
-        Train history
-    </h3>
-    <div class="ui attached segment">
-        {% if session.history.acc %}
-            <canvas id="acc_chart" width="400" height="100"></canvas>
-        {% endif %}
-
-        {% if session.history.loss %}
-            <canvas id="loss_chart" width="400" height="100"></canvas>
-        {% endif %}
-    </div>
-
-    <h3 class="ui top attached block header">
-        Errors (count: {{ error_sentences|length }})
-    </h3>
-    <div class="ui attached segment">
-        <table class="ui selectable celled table">
+    {% if session.evaluation %}
+        <table class="ui celled table">
             <thead>
             <tr>
-                {% for header in error_sentences.0 %}
-                    <th>{{ header }}</th>
-                {% endfor %}
+                <th colspan="2">
+                    Train evaluation
+                </th>
             </tr>
             </thead>
             <tbody>
-            {% for error_sentence in error_sentences %}
-                <tr>
-                    <td>{{ error_sentence.raw }}</td>
-                    <td>{{ error_sentence.preprocessing }}</td>
-                    <td>{{ error_sentence.x }}</td>
-                    <td>{{ error_sentence.y_true }}</td>
-                    <td>{{ error_sentence.y_pred }}</td>
-                </tr>
-            {% endfor %}
+            <tr>
+                <td>
+                    <i class="info icon"></i> Precision
+                </td>
+                <td>{{ session.evaluation.precision|floatformat:4 }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <i class="info icon"></i> Recall
+                </td>
+                <td>{{ session.evaluation.recall|floatformat:4 }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <i class="info icon"></i> F1 score
+                </td>
+                <td>{{ session.evaluation.f1_score|floatformat:4 }}</td>
+            </tr>
             </tbody>
         </table>
-    </div>
+    {% endif %}
 
+    {% if session.history %}
+        <h3 class="ui top attached block header">
+            Train history
+        </h3>
+        <div class="ui attached segment">
+            {% if session.history.acc %}
+                <canvas id="acc_chart" width="400" height="100"></canvas>
+            {% endif %}
+
+            {% if session.history.loss %}
+                <canvas id="loss_chart" width="400" height="100"></canvas>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if error_sentences %}
+        <h3 class="ui top attached block header">
+            Errors (count: {{ error_sentences|length }})
+        </h3>
+        <div class="ui attached segment">
+            <table class="ui selectable celled table">
+                <thead>
+                <tr>
+                    {% for header in error_sentences.0 %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for error_sentence in error_sentences %}
+                    <tr>
+                        <td>{{ error_sentence.raw }}</td>
+                        <td>{{ error_sentence.preprocessing }}</td>
+                        <td>{{ error_sentence.x }}</td>
+                        <td>{{ error_sentence.y_true }}</td>
+                        <td>{{ error_sentence.y_pred }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
 {% endblock %}

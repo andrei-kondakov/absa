@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+from celery import shared_task
+
 import numpy as np
 from keras.layers.embeddings import Embedding
 from keras.models import model_from_config
@@ -14,7 +16,13 @@ from word_embeddings.utils import create_embedding_matrix, load_w2v_model
 logger = logging.getLogger('absa')
 
 
-def train(session):
+@shared_task
+def train(session_id):
+    session = TrainSession.objects.get(id=session_id)
+
+    if len(session.y_pred):
+        return
+
     model = model_from_config(session.model.config)
 
     # Check if model has Embedding layer and if there is such a layer we need to set weights from word_embeddings model
@@ -55,19 +63,29 @@ def train(session):
     session.model_filepath = model_path
     session.save()
 
+    evaluate.delay(session.id)
 
-def evaluate(session):
+
+@shared_task()
+def evaluate(session_id):
+    session = TrainSession.objects.get(id=session_id)
+
+    if not session.evaluation is None:
+        return
+
     session.evaluation = get_metrics(session.batch.y_test, session.y_pred)
     session.save()
 
 
+@shared_task
 def train_all():
     sessions = TrainSession.objects.filter(y_pred=[])
     for session in sessions:
-        train(session)
+        train.delay(session.id)
 
 
+@shared_task()
 def evaluate_all():
     sessions = TrainSession.objects.filter(evaluation__isnull=True)
     for session in sessions:
-        evaluate(session)
+        evaluate.delay(session.id)
