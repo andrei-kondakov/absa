@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+
+{% block title %}Session detail {{ session.id }}{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <script>
+
+
+        $(function () {
+            // Accuracy chart
+
+            var data = {
+                labels: [],
+                datasets: []
+            };
+
+
+            var labels = [];
+
+            var acc_dataset = {
+                label: 'Accuracy',
+                data: [],
+                borderColor: "#3e95cd"
+            };
+
+
+            var val_acc_dataset = {
+                label: 'Validation accuracy',
+                data: [],
+                borderColor: "#FFA500"
+            };
+
+
+            {% for acc in session.history.acc %}
+                labels.push({{ forloop.counter }});
+                acc_dataset.data.push({{ acc }});
+            {% endfor %}
+
+            {% for val_acc in session.history.val_acc %}
+                val_acc_dataset.data.push({{ val_acc }});
+            {% endfor %}
+
+
+            var ctx = document.getElementById('acc_chart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [acc_dataset, val_acc_dataset]
+                },
+                options: {
+                    legend: {
+                        labels: {
+                            boxWidth: 15
+                        }
+                    },
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function (label, index, labels) {
+                                        return label * 100 + '%';
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += (tooltipItem.yLabel * 100).toFixed(2) + '%';
+                                return label;
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            fill: false,
+                            borderWidth: 1.5
+                        }
+                    }
+                }
+            });
+        });
+
+        $(function () {
+            // Loss chart
+
+            var data = {
+                labels: [],
+                datasets: []
+            };
+
+
+            var labels = [];
+
+            var loss_dataset = {
+                label: 'Loss',
+                data: [],
+                borderColor: "#3e95cd"
+            };
+
+
+            var val_loss_dataset = {
+                label: 'Validation loss',
+                data: [],
+                borderColor: "#FFA500"
+            };
+
+
+            {% for loss in session.history.loss %}
+                labels.push({{ forloop.counter }});
+                loss_dataset.data.push({{ loss }});
+            {% endfor %}
+
+            {% for val_loss in session.history.val_loss %}
+                val_loss_dataset.data.push({{ val_loss }});
+            {% endfor %}
+
+
+            var ctx = document.getElementById('loss_chart').getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [loss_dataset, val_loss_dataset]
+                },
+                options: {
+                    legend: {
+                        labels: {
+                            boxWidth: 15
+                        }
+                    },
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function (label, index, labels) {
+                                        return label.toFixed(2);
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += tooltipItem.yLabel.toFixed(4);
+                                return label;
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            fill: false,
+                            borderWidth: 1.5
+                        }
+                    }
+                }
+            });
+        });
+
+    </script>
+
+
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui block header">
+        Train sessions #{{ session.id }}
+    </h3>
+
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th colspan="2">
+                Task information
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <i class="tasks icon"></i> Task
+            </td>
+            <td>{{ session.batch.task.get_type_display }}</td>
+        </tr>
+        {% if session.batch.task.aspect_entity %}
+            <tr>
+                <td>
+                    <i class="bullseye icon"></i> Entity
+                </td>
+                <td>{{ session.batch.task.aspect_entity }}</td>
+            </tr>
+        {% endif %}
+
+        {% if session.batch.task.aspect_attribute %}
+            <tr>
+                <td>
+                    <i class="tag icon"></i> Attribute
+                </td>
+                <td>{{ session.batch.task.aspect_attribute }}</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th colspan="2">
+                Model information
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <i class="hdd icon"></i> Backend
+            </td>
+            <td>{{ session.model.config.backend|capfirst }}</td>
+        </tr>
+        <tr>
+            <td>
+                <i class="info icon"></i> Class name
+            </td>
+            <td>{{ session.model.config.class_name|capfirst }}</td>
+        </tr>
+        <tr>
+            <td>
+                <i class="github icon"></i> Keras version
+            </td>
+            <td>{{ session.model.config.keras_version }}</td>
+        </tr>
+        <tr>
+            <td>
+                <i class="clone outline icon"></i> Layers
+            </td>
+            <td>
+                {% for config in session.model.config.config %}
+                    {{ config.class_name }}
+                {% endfor %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="ui celled table">
+        <thead>
+        <tr>
+            <th colspan="2">
+                Train evaluation
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <i class="info icon"></i> Precision
+            </td>
+            <td>{{ session.evaluation.precision|floatformat:4 }}</td>
+        </tr>
+        <tr>
+            <td>
+                <i class="info icon"></i> Recall
+            </td>
+            <td>{{ session.evaluation.recall|floatformat:4 }}</td>
+        </tr>
+        <tr>
+            <td>
+                <i class="info icon"></i> F1 score
+            </td>
+            <td>{{ session.evaluation.f1_score|floatformat:4 }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h3 class="ui top attached block header">
+        Train history
+    </h3>
+    <div class="ui attached segment">
+        {% if session.history.acc %}
+            <canvas id="acc_chart" width="400" height="100"></canvas>
+        {% endif %}
+
+        {% if session.history.loss %}
+            <canvas id="loss_chart" width="400" height="100"></canvas>
+        {% endif %}
+    </div>
+
+    <h3 class="ui top attached block header">
+        Errors (count: {{ error_sentences|length }})
+    </h3>
+    <div class="ui attached segment">
+        <table class="ui selectable celled table">
+            <thead>
+            <tr>
+                {% for header in error_sentences.0 %}
+                    <th>{{ header }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for error_sentence in error_sentences %}
+                <tr>
+                    <td>{{ error_sentence.raw }}</td>
+                    <td>{{ error_sentence.preprocessing }}</td>
+                    <td>{{ error_sentence.x }}</td>
+                    <td>{{ error_sentence.y_true }}</td>
+                    <td>{{ error_sentence.y_pred }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
