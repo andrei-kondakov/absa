@@ -11,5 +11,5 @@ class ModelAdmin(admin.ModelAdmin):
 
 @admin.register(TrainSession)
 class TrainSessionAdmin(admin.ModelAdmin):
-    list_display = ('model', 'batch', 'train_on_gpu')
+    list_display = ('model', 'batch', 'train_on_gpu', 'evaluation')
     ordering = ('id',)
