@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
         Sentence = TrainSentence if is_train_sentences else TestSentence
 
-        with open(options['filepath']) as file:
+        with open(options['filepath'], encoding='utf8') as file:
             xml_content = file.read()
             xml_tree = ET.XML(xml_content)
 

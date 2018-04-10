@@ -1,5 +1,6 @@
 from time import time
 
+from tensorflow.python.client import device_lib
 from keras.callbacks import Callback
 from sklearn.metrics import f1_score, precision_score, recall_score
 
@@ -22,3 +23,7 @@ def get_metrics(y_true, y_pred):
         'recall': recall_score(y_true, y_pred),
         'f1_score': f1_score(y_true, y_pred)
     }
+
+
+def is_train_on_gpu():
+    return 'GPU' in [device.device_type for device in device_lib.list_local_devices()]

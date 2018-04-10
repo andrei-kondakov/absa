@@ -10,7 +10,7 @@ from keras.layers.embeddings import Embedding
 from keras.models import model_from_config
 from keras_ml.constants import KERAS_MODELS_DIR
 from keras_ml.models import TrainSession
-from keras_ml.utils import TimingCallback, get_metrics
+from keras_ml.utils import TimingCallback, get_metrics, is_train_on_gpu
 from word_embeddings.utils import create_embedding_matrix, load_w2v_model
 
 logger = logging.getLogger('absa')
@@ -61,6 +61,7 @@ def train(session_id):
     session.exec_time = timing_callback.logs
     session.history = history_obj.history
     session.model_filepath = model_path
+    session.train_on_gpu = is_train_on_gpu()
     session.save()
 
     evaluate.delay(session.id)
