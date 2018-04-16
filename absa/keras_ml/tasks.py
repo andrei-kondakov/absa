@@ -5,6 +5,7 @@ from pathlib import Path
 
 from celery import shared_task
 from django.db.models import Q
+from django.core.cache import cache
 import numpy as np
 from keras import backend as K
 from keras.layers.embeddings import Embedding
@@ -75,8 +76,23 @@ def evaluate(session_id):
 
     if session.evaluation:
         return
-    
-    session.evaluation = get_metrics(session.batch.y_test, session.y_pred)
+
+    metrics = get_metrics(session.batch.y_test, session.y_pred)
+    session.evaluation = metrics
+
+    f1_score_key = f'keras:f1_score:{session.batch.task_id}'
+    max_f1_score = cache.get(f1_score_key)
+    ttl = 60 * 60 * 24 * 365 * 2 # 2 years
+
+    if max_f1_score:
+        if metrics['f1_score'] >= max_f1_score:
+            cache.set(f1_score_key, metrics['f1_score'], ttl)
+        elif os.path.exists(session.model_filepath):
+            os.remove(session.model_filepath)
+            session.model_filepath = None
+    else:
+        cache.set(f1_score_key, metrics['f1_score'], ttl)
+
     session.save()
 
 
