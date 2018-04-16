@@ -47,6 +47,9 @@ def process(sentence_batch):
             out_of_scope=False
         )
 
+        if not len(train_sentences) or not len(test_sentences):
+            raise ValueError('You should loaded datasets')
+
         x_train_raw = [x.text for x in train_sentences]
         x_train_preproc = preprocess(x_train_raw, preprocessing)
         y_train_raw = [','.join(x.categories) for x in train_sentences]

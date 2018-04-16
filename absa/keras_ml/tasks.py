@@ -4,10 +4,11 @@ from datetime import datetime
 from pathlib import Path
 
 from celery import shared_task
-
+from django.db.models import Q
 import numpy as np
+from keras import backend as K
 from keras.layers.embeddings import Embedding
-from keras.models import model_from_config
+from keras.models import Sequential
 from keras_ml.constants import KERAS_MODELS_DIR
 from keras_ml.models import TrainSession
 from keras_ml.utils import TimingCallback, get_metrics, is_train_on_gpu
@@ -20,10 +21,10 @@ logger = logging.getLogger('absa')
 def train(session_id):
     session = TrainSession.objects.get(id=session_id)
 
-    if len(session.y_pred):
+    if session.y_pred:
         return
 
-    model = model_from_config(session.model.config)
+    model = Sequential.from_config(session.model.config)
 
     # Check if model has Embedding layer and if there is such a layer we need to set weights from word_embeddings model
     embedding_layer = None
@@ -58,6 +59,7 @@ def train(session_id):
     model.save(model_path)
 
     session.y_pred = model.predict_classes(x_test).tolist()
+    K.clear_session()
     session.exec_time = timing_callback.logs
     session.history = history_obj.history
     session.model_filepath = model_path
@@ -71,16 +73,16 @@ def train(session_id):
 def evaluate(session_id):
     session = TrainSession.objects.get(id=session_id)
 
-    if not session.evaluation is None:
+    if session.evaluation:
         return
-
+    
     session.evaluation = get_metrics(session.batch.y_test, session.y_pred)
     session.save()
 
 
 @shared_task
 def train_all():
-    sessions = TrainSession.objects.filter(y_pred=[])
+    sessions = TrainSession.objects.filter(Q(y_pred=None) | Q(y_pred=[]))
     for session in sessions:
         train.delay(session.id)
 

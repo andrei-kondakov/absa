@@ -9,7 +9,7 @@ python ../absa/manage.py shell_plus --notebook
 $ celery -A absa worker --loglevel=warning -E --concurrency=1
 
 # run flower
-$ celery flower -A absa --port=5555
+$ celery flower -A absa --port=5555 --persistent
 
 
 # Installation
