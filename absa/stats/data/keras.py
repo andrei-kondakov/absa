@@ -16,7 +16,7 @@ def session_stats():
     }
 
 
-def aspect_detection_stats():
+def aspect_detection_stats_1():
     raw_stats = TrainSession.objects.filter(
         batch__task__type=Task.Type.ASPECT_DETECTION,
         f1_score__isnull=False
@@ -200,9 +200,31 @@ def aspect_detection_stats_2():
     }
 
 
-def keras_stats():
+def aspect_detection_stats_3(aspect_stats_1, aspect_stats_2):
+    aspects = []
+
+    for i in range(len(aspect_stats_1['aspects'])):
+        aspects.append({
+            'entity': aspect_stats_1['aspects'][i]['entity'],
+            'attribute': aspect_stats_1['aspects'][i]['attribute'],
+            'f1_score': max(aspect_stats_1['aspects'][i]['f1_score'], aspect_stats_2['aspects'][i]['f1_score'])
+        })
+
+    f1_macro = np.mean([x['f1_score'] for x in aspects])
     return {
-        'aspect_detection_stats': aspect_detection_stats(),
-        'aspect_detection_stats_2': aspect_detection_stats_2(),
+        'aspects': aspects,
+        'f1_macro': f1_macro
+    }
+
+
+def keras_stats():
+    aspect_stats_1 = aspect_detection_stats_1()
+    aspect_stats_2 = aspect_detection_stats_2()
+    aspect_stats_3 = aspect_detection_stats_3(aspect_stats_1, aspect_stats_2)
+
+    return {
+        'aspect_detection_stats_1': aspect_stats_1,
+        'aspect_detection_stats_2': aspect_stats_2,
+        'aspect_detection_stats_3': aspect_stats_3,
         'session_stats': session_stats()
     }

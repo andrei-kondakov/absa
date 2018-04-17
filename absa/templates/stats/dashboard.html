@@ -57,11 +57,12 @@
             </div>
             <div class="ui segment">
                 <div class="ui top attached tabular menu">
-                    <div class="item active" data-tab="aspect_detection">Aspect detection</div>
-                    <div class="item" data-tab="aspect_detection_2">Aspect detection (composite)</div>
+                    <div class="item active" data-tab="aspect_detection_1">Aspect detection v1</div>
+                    <div class="item" data-tab="aspect_detection_2">Aspect detection v2</div>
+                    <div class="item" data-tab="aspect_detection_3">Aspect detection (composite)</div>
                     <div class="item" data-tab="polarity_detection">Polarity detection</div>
                 </div>
-                <div class="ui bottom attached tab segment active" data-tab="aspect_detection">
+                <div class="ui bottom attached tab segment active" data-tab="aspect_detection_1">
                     <table class="ui fixed single line celled table">
                         <thead>
                         <tr>
@@ -71,7 +72,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for aspect_stats in keras.aspect_detection_stats.aspects %}
+                        {% for aspect_stats in keras.aspect_detection_stats_1.aspects %}
                             <tr>
                                 <td>{{ aspect_stats.entity }}</td>
                                 <td>{{ aspect_stats.attribute }}</td>
@@ -81,7 +82,7 @@
                         </tbody>
                     </table>
                     <div class="ui center aligned segment">
-                        F1_macro: {{ keras.aspect_detection_stats.f1_macro|floatformat:4 }}
+                        F1_macro: {{ keras.aspect_detection_stats_1.f1_macro|floatformat:4 }}
                     </div>
                 </div>
                 <div class="ui bottom attached tab segment" data-tab="aspect_detection_2">
@@ -105,6 +106,29 @@
                     </table>
                     <div class="ui center aligned segment">
                         F1_macro: {{ keras.aspect_detection_stats_2.f1_macro|floatformat:4 }}
+                    </div>
+                </div>
+                <div class="ui bottom attached tab segment" data-tab="aspect_detection_3">
+                    <table class="ui fixed single line celled table">
+                        <thead>
+                        <tr>
+                            <th>Entity</th>
+                            <th>Attribute</th>
+                            <th>F1 score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for aspect_stats in keras.aspect_detection_stats_3.aspects %}
+                            <tr>
+                                <td>{{ aspect_stats.entity }}</td>
+                                <td>{{ aspect_stats.attribute }}</td>
+                                <td>{{ aspect_stats.f1_score|floatformat:4 }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="ui center aligned segment">
+                        F1_macro: {{ keras.aspect_detection_stats_3.f1_macro|floatformat:4 }}
                     </div>
                 </div>
                 <div class="ui bottom attached tab segment" data-tab="polarity_detection">
