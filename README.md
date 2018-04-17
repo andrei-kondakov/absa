@@ -6,7 +6,8 @@ python ../absa/manage.py shell_plus --notebook
 
 # Celery
 # run worker
-$ celery -A absa worker --loglevel=warning -E --concurrency=1
+$ celery -A absa worker --loglevel=warning -E --concurrency=1 -Q train
+$ celery -A absa worker --loglevel=warning -E --concurrency=1 -Q evaluation
 
 # run flower
 $ celery flower -A absa --port=5555 --persistent

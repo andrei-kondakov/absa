@@ -186,7 +186,12 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
-
+CELERY_TASK_ROUTES = {
+    'keras_ml.tasks.train_all': 'train',
+    'keras_ml.tasks.train': 'train',
+    'keras_ml.tasks.evaluate_all': 'evaluation',
+    'keras_ml.tasks.evaluate': 'evaluation'
+}
 
 CACHES = {
     "default": {
