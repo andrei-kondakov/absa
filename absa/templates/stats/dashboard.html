@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <script>
+        $('.menu .item')
+            .tab()
+        ;
+    </script>
+
+
+{% endblock %}
+
+{% block content %}
+
+    {% if keras %}
+        <div class="ui segments">
+            <div class="ui segment">
+                <h3 class="ui top header ">
+                    Keras
+                </h3>
+            </div>
+            <div class="ui horizontal segments">
+                <div class="ui segment center aligned">
+                    <div class="ui tiny statistic">
+                        <div class="value">
+                            {{ keras.session_stats.all }}
+                        </div>
+                        <div class="label">
+                            All sessions
+                        </div>
+                    </div>
+                </div>
+                <div class="ui segment center aligned">
+                    <div class="ui tiny statistic">
+                        <div class="value">
+                            {{ keras.session_stats.trained }}
+                        </div>
+                        <div class="label">
+                            Trained sessions
+                        </div>
+                    </div>
+                </div>
+                <div class="ui segment center aligned">
+                    <div class="ui tiny statistic">
+                        <div class="value">
+                            {{ keras.session_stats.evaluated }}
+                        </div>
+                        <div class="label">
+                            Evaluated sessions
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui segment">
+                <div class="ui top attached tabular menu">
+                    <div class="item active" data-tab="aspect_detection">Aspect detection</div>
+                    <div class="item" data-tab="aspect_detection_2">Aspect detection (composite)</div>
+                    <div class="item" data-tab="polarity_detection">Polarity detection</div>
+                </div>
+                <div class="ui bottom attached tab segment active" data-tab="aspect_detection">
+                    <table class="ui fixed single line celled table">
+                        <thead>
+                        <tr>
+                            <th>Entity</th>
+                            <th>Attribute</th>
+                            <th>F1 score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for aspect_stats in keras.aspect_detection_stats.aspects %}
+                            <tr>
+                                <td>{{ aspect_stats.entity }}</td>
+                                <td>{{ aspect_stats.attribute }}</td>
+                                <td>{{ aspect_stats.f1_score|floatformat:4 }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="ui center aligned segment">
+                        F1_macro: {{ keras.aspect_detection_stats.f1_macro|floatformat:4 }}
+                    </div>
+                </div>
+                <div class="ui bottom attached tab segment" data-tab="aspect_detection_2">
+                    aspect_detection_2
+                </div>
+                <div class="ui bottom attached tab segment" data-tab="polarity_detection">
+                    polarity_detection
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

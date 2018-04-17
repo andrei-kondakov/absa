@@ -5,7 +5,7 @@ ipython==6.3.1
 pymorphy2==0.8
 gensim==3.4.0
 Keras==2.1.5
-tensorflow-gpu==1.7.0
+#tensorflow-gpu==1.7.0
 jupyter==1.0.0
 h5py==2.7.1
 scikit-learn==0.19.1

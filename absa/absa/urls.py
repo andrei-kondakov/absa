@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    path('', include('stats.urls')),
     path('admin/', admin.site.urls),
     path('data/', include('data.urls')),
     path('keras/', include('keras_ml.urls')),
