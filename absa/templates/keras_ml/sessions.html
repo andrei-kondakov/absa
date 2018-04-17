@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Sessions{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+    <script>
+
+        {% for task in tasks %}
+            {% for model_id, sessions in task.sessions.items %}
+                var ctx = document.getElementById('f1-scores-{{ task.task.id }}-{{ model_id }}');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            {% for session in sessions %}
+                                "{{ session.id }}",
+                            {% endfor %}
+                        ],
+                        datasets: [{
+                            label: 'Model #{{ model_id }}',
+                            data: [
+                                {% for session in sessions %}
+                                    {{ session.f1_score }},
+                                {% endfor %}
+                            ],
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.2)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            {% endfor %}
+        {% endfor %}
+
+
+    </script>
+
+
+{% endblock %}
+
+{% block content %}
+    <h3 class="ui block header">
+        Train sessions
+    </h3>
+
+    {% for task in tasks %}
+        <div class="ui segments">
+            <div class="ui segment">
+                <h3 class="ui top header">
+                    {{ task.task }}
+                </h3>
+            </div>
+            {% for model_id, sessions in task.sessions.items %}
+                <div class="ui segment">
+                    <canvas id="f1-scores-{{ task.task.id }}-{{ model_id }}" width="400" height="50"></canvas>
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+{% endblock %}
