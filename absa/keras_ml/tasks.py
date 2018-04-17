@@ -4,8 +4,9 @@ from datetime import datetime
 from pathlib import Path
 
 from celery import shared_task
-from django.db.models import Q
 from django.core.cache import cache
+from django.db.models import Q
+
 import numpy as np
 from keras import backend as K
 from keras.layers.embeddings import Embedding
@@ -74,11 +75,15 @@ def train(session_id):
 def evaluate(session_id):
     session = TrainSession.objects.get(id=session_id)
 
-    if session.evaluation:
+    if session.precision and session.recall and session.f1_score and session.accuracy:
         return
 
     metrics = get_metrics(session.batch.y_test, session.y_pred)
-    session.evaluation = metrics
+
+    session.accuracy = metrics['accuracy']
+    session.precision = metrics['precision']
+    session.recall = metrics['recall']
+    session.f1_score = metrics['f1_score']
 
     f1_score_key = f'keras:f1_score:{session.batch.task_id}'
     max_f1_score = cache.get(f1_score_key)
@@ -87,7 +92,7 @@ def evaluate(session_id):
     if max_f1_score:
         if metrics['f1_score'] >= max_f1_score:
             cache.set(f1_score_key, metrics['f1_score'], ttl)
-        elif os.path.exists(session.model_filepath):
+        elif session.model_filepath and os.path.exists(session.model_filepath):
             os.remove(session.model_filepath)
             session.model_filepath = None
     else:
@@ -105,6 +110,8 @@ def train_all():
 
 @shared_task()
 def evaluate_all():
-    sessions = TrainSession.objects.filter(evaluation__isnull=True)
+    sessions = TrainSession.objects.filter(
+        Q(precision__isnull=True) | Q(recall__isnull=True) | Q(f1_score__isnull=True) | Q(accuracy__isnull=True)
+    )
     for session in sessions:
         evaluate.delay(session.id)

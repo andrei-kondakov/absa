@@ -24,7 +24,10 @@ class TrainSession(models.Model):
         blank=True
     )
     history = JSONField(null=True, blank=True)
-    evaluation = JSONField(null=True, blank=True)
+    precision = models.FloatField(null=True, blank=True)
+    recall = models.FloatField(null=True, blank=True)
+    f1_score = models.FloatField(null=True, blank=True)
+    accuracy = models.FloatField(null=True, blank=True)
     exec_time = ArrayField(base_field=models.FloatField(), null=True, blank=True)
     model_filepath = models.FilePathField(blank=True, null=True)
 

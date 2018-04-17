@@ -1,8 +1,11 @@
 from time import time
 
-from tensorflow.python.client import device_lib
 from keras.callbacks import Callback
-from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.metrics import (
+    accuracy_score, f1_score, precision_score,
+    recall_score
+)
+from tensorflow.python.client import device_lib
 
 
 class TimingCallback(Callback):
@@ -19,6 +22,7 @@ class TimingCallback(Callback):
 
 def get_metrics(y_true, y_pred):
     return {
+        'accuracy': accuracy_score(y_true, y_pred),
         'precision': precision_score(y_true, y_pred),
         'recall': recall_score(y_true, y_pred),
         'f1_score': f1_score(y_true, y_pred)
