@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django_extensions',
     'raven.contrib.django.raven_compat',
+    'mathfilters',
     'data',
     'word_embeddings',
     'keras_ml',
@@ -71,6 +72,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'stats_tags': 'stats.tags',
+            }
         },
     },
 ]

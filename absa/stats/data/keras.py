@@ -204,10 +204,13 @@ def aspect_detection_stats_3(aspect_stats_1, aspect_stats_2):
     aspects = []
 
     for i in range(len(aspect_stats_1['aspects'])):
+        composite = aspect_stats_2['aspects'][i]['f1_score'] > aspect_stats_1['aspects'][i]['f1_score']
+        f1_score = aspect_stats_2['aspects'][i]['f1_score'] if composite else aspect_stats_1['aspects'][i]['f1_score']
         aspects.append({
             'entity': aspect_stats_1['aspects'][i]['entity'],
             'attribute': aspect_stats_1['aspects'][i]['attribute'],
-            'f1_score': max(aspect_stats_1['aspects'][i]['f1_score'], aspect_stats_2['aspects'][i]['f1_score'])
+            'f1_score': f1_score,
+            'composite': composite
         })
 
     f1_macro = np.mean([x['f1_score'] for x in aspects])

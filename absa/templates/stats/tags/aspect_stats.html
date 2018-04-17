@@ -1,0 +1,54 @@
+{% load mathfilters %}
+
+<table class="ui fixed single line celled table">
+    <thead>
+    <tr>
+        <th>Entity</th>
+        <th>Attribute</th>
+        <th>F1 score</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for aspect_stats in stats.aspects %}
+        <tr {% if aspect_stats.composite %}class="active"{% endif %}>
+            <td>{{ aspect_stats.entity }}</td>
+            <td>{{ aspect_stats.attribute }}</td>
+            <td>{{ aspect_stats.f1_score|floatformat:4 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<table class="ui fixed single line celled table">
+    <thead>
+    <tr>
+        <th>F1 baseline</th>
+        <th>F1 best</th>
+        <th>F1 macro</th>
+        <th>Baseline diff</th>
+        <th>Best diff</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{ sb1_baseline|floatformat:4 }}</td>
+        <td>{{ sb1_best|floatformat:4 }}</td>
+        <td>{{ stats.f1_macro|floatformat:4 }}
+        <td>
+            {% if baseline_diff_pct > 0 %}
+                <i class="arrow up icon"></i>
+            {% else %}
+                <i class="arrow down icon"></i>
+            {% endif %}
+            {{ baseline_diff_pct|abs|floatformat:2 }} %
+        </td>
+        <td>
+            {% if best_diff_pct > 0 %}
+                <i class="arrow up icon"></i>
+            {% else %}
+                <i class="arrow down icon"></i>
+            {% endif %}
+            {{ best_diff_pct|abs|floatformat:2 }} %
+        </td>
+    </tr>
+    </tbody>
+</table>
