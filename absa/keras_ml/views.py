@@ -14,7 +14,8 @@ def sessions(request):
 
     for task in tasks:
         train_sessions = defaultdict(list)
-        for session in TrainSession.objects.filter(batch__task_id=task.id):
+        sessions = TrainSession.objects.filter(batch__task_id=task.id, f1_score__isnull=False)
+        for session in sessions:
             train_sessions[session.model_id].append(session)
 
         data['tasks'].append(
