@@ -220,6 +220,32 @@ def aspect_detection_stats_3(aspect_stats_1, aspect_stats_2):
     }
 
 
+def polarity_detection_stats():
+    raw_stats = TrainSession.objects.filter(
+        batch__task__type=Task.Type.POLARITY_DETECTION,
+        f1_score__isnull=False
+    ).values(
+        'batch__task__polarity'
+    ).annotate(
+        f1_score=Max('f1_score')
+    ).order_by('batch__task__polarity')
+
+    polarities = []
+    for item in raw_stats:
+        polarities.append(
+            {
+                'polarity': item['batch__task__polarity'],
+                'f1_score': item['f1_score']
+            }
+        )
+    f1_macro = np.mean([x['f1_score'] for x in polarities])
+
+    return {
+        'polarities': polarities,
+        'f1_macro': f1_macro
+    }
+
+
 def keras_stats():
     aspect_stats_1 = aspect_detection_stats_1()
     aspect_stats_2 = aspect_detection_stats_2()
@@ -229,5 +255,6 @@ def keras_stats():
         'aspect_detection_stats_1': aspect_stats_1,
         'aspect_detection_stats_2': aspect_stats_2,
         'aspect_detection_stats_3': aspect_stats_3,
+        'polarity_detection_stats': polarity_detection_stats(),
         'session_stats': session_stats()
     }

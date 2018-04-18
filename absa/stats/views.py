@@ -7,4 +7,5 @@ def dashboard(request):
     data = {
         'keras': keras_stats()
     }
+    print(data['keras']['polarity_detection_stats'])
     return render(request, 'stats/dashboard.html', data)
