@@ -3,27 +3,47 @@ from collections import defaultdict
 from django.shortcuts import get_object_or_404, render
 
 from data.models import Task
+from data.utils.preprocessing import Preprocessing
+from data.utils.processing import Processing
 from keras_ml.models import TrainSession
 
+task_type_label = dict(Task.Type.choices)
+processing_label = dict(Processing.choices)
+preprocessing_label = dict(Preprocessing.choices)
 
 def sessions(request):
     data = {
-        'tasks': []
+        'train_sessions': defaultdict(list)
     }
-    tasks = Task.objects.all()
+    train_sessions = TrainSession.objects.filter(
+        f1_score__isnull=False
+    ).values(
+        'id',
+        'model_id',
+        'batch__preprocessing',
+        'batch__processing',
+        'batch__task',
+        'batch__task__type',
+        'batch__task__aspect_attribute',
+        'batch__task__aspect_entity',
+        'batch__task__polarity',
+        'f1_score'
+    ).order_by('-id')
 
-    for task in tasks:
-        train_sessions = defaultdict(list)
-        sessions = TrainSession.objects.filter(batch__task_id=task.id, f1_score__isnull=False)
-        for session in sessions:
-            train_sessions[session.model_id].append(session)
+    for session in train_sessions:
+        session['preprocessing'] = preprocessing_label[session['batch__preprocessing']]
+        session['processing'] = processing_label[session['batch__processing']]
+        task_desc = [
+            task_type_label[session['batch__task__type']],
+            session['batch__task__aspect_entity'],
+            session['batch__task__aspect_attribute'],
+            session['batch__task__polarity']
+        ]
+        task = ', '.join(filter(None, task_desc))
+        data['train_sessions'][task].append(session)
 
-        data['tasks'].append(
-            {
-                'task': task,
-                'sessions': dict(train_sessions)
-            }
-        )
+    # FIXME tempory solution
+    data['train_sessions'] = dict(sorted(dict(data['train_sessions']).items()))
 
     return render(request, 'keras_ml/sessions.html', data)
 
@@ -52,3 +72,7 @@ def session_detail(request, session_id):
     }
 
     return render(request, 'keras_ml/session_detail.html', data)
+
+
+def model_detail(request, model_id):
+    pass
