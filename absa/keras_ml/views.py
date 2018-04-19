@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 
 from django.shortcuts import get_object_or_404, render
@@ -5,11 +6,12 @@ from django.shortcuts import get_object_or_404, render
 from data.models import Task
 from data.utils.preprocessing import Preprocessing
 from data.utils.processing import Processing
-from keras_ml.models import TrainSession
+from keras_ml.models import Model, TrainSession
 
 task_type_label = dict(Task.Type.choices)
 processing_label = dict(Processing.choices)
 preprocessing_label = dict(Preprocessing.choices)
+
 
 def sessions(request):
     data = {
@@ -75,4 +77,12 @@ def session_detail(request, session_id):
 
 
 def model_detail(request, model_id):
-    pass
+    model = get_object_or_404(Model, id=model_id)
+
+    data = {
+        'model_id': model.id,
+        'model_config': json.dumps(model.config, indent=4),
+        'model_compile_opts': json.dumps(model.compile_opts, indent=4)
+    }
+
+    return render(request, 'keras_ml/model_detail.html', data)

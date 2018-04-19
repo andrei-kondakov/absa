@@ -226,34 +226,34 @@
         </tr>
         </thead>
         <tbody>
+{#        <tr>#}
+{#            <td>#}
+{#                <i class="hdd icon"></i> Backend#}
+{#            </td>#}
+{#            <td>{{ session.model.config.backend|capfirst }}</td>#}
+{#        </tr>#}
         <tr>
             <td>
-                <i class="hdd icon"></i> Backend
+                <i class="info icon"></i> ID
             </td>
-            <td>{{ session.model.config.backend|capfirst }}</td>
+            <td><a href="{% url 'model_detail' session.model_id %}">{{ session.model_id }}</a></td>
         </tr>
-        <tr>
-            <td>
-                <i class="info icon"></i> Class name
-            </td>
-            <td>{{ session.model.config.class_name|capfirst }}</td>
-        </tr>
-        <tr>
-            <td>
-                <i class="github icon"></i> Keras version
-            </td>
-            <td>{{ session.model.config.keras_version }}</td>
-        </tr>
-        <tr>
-            <td>
-                <i class="clone outline icon"></i> Layers
-            </td>
-            <td>
-                {% for config in session.model.config.config %}
-                    {{ config.class_name }}
-                {% endfor %}
-            </td>
-        </tr>
+{#        <tr>#}
+{#            <td>#}
+{#                <i class="github icon"></i> Keras version#}
+{#            </td>#}
+{#            <td>{{ session.model.config.keras_version }}</td>#}
+{#        </tr>#}
+{#        <tr>#}
+{#            <td>#}
+{#                <i class="clone outline icon"></i> Layers#}
+{#            </td>#}
+{#            <td>#}
+{#                {% for config in session.model.config.config %}#}
+{#                    {{ config.class_name }}#}
+{#                {% endfor %}#}
+{#            </td>#}
+{#        </tr>#}
         </tbody>
     </table>
 
